@@ -1,0 +1,127 @@
+import tkinter
+from tkinter import *
+from tkinter import messagebox
+
+root=Tk()
+root.geometry('500x710')
+root.title('test window')
+
+apparelbrand=StringVar()
+Atype=StringVar()
+Aprice=IntVar()
+AsizeS=IntVar()
+AsizeM=IntVar()
+AsizeL=IntVar()
+Alist=list()
+apparelbrandtosearch=StringVar()
+appareltypetosearch=StringVar()
+apparelsizetosearch=StringVar()
+apparelrequired=IntVar()
+
+frame_a=Frame(master=root, width=490, height=350, bg="red")
+
+
+
+Label(frame_a, text='Apparel Brand: ',font ='arial 15').grid(row=0, column=0)
+Label(frame_a, text='Apparel Type: ',font ='arial 15').grid(row=1, column=0)
+Label(frame_a, text='Apparel Price: ',font ='arial 15').grid(row=2, column=0)
+Label(frame_a, text='Apparel Quantities for sizes: ',font ='arial 15').grid(row=3, column=0)
+Entry(frame_a,font ='arial 15' , bg = 'ghost white',textvariable=apparelbrand).grid(row=0, column=1)
+Entry(frame_a,font ='arial 15' , bg = 'ghost white',textvariable=Atype).grid(row=1, column=1)
+Entry(frame_a,font ='arial 15' , bg = 'ghost white',textvariable=Aprice).grid(row=2, column=1)
+AsizeS = Entry(frame_a,font ='arial 15' , bg = 'ghost white',textvariable=AsizeS)
+AsizeM = Entry(frame_a,font ='arial 15' , bg = 'ghost white',textvariable=AsizeM)
+AsizeL = Entry(frame_a,font ='arial 15' , bg = 'ghost white',textvariable=AsizeL)
+
+AsizeS.grid(row=3, column=1)
+AsizeM.grid(row=3, column=2)
+AsizeL.grid(row=3, column=3)
+
+AsizeS.insert(0,'Small')
+AsizeM.insert(0,'Medium')
+AsizeL.insert(0,'Large')
+
+
+
+
+class Apparel:
+    def __init__(self,brand,type,price,instock):
+        self.apparelbrand=str(brand)
+        self.Type=str(type)
+        self.Price=int(price)
+        self.inStock=instock
+
+    def __repr__(self):
+        return '({},{},₹{},{})'.format(self.apparelbrand,self.Type,self.Price,self.inStock)
+
+
+def functioncallback(*args):
+    ASizeAvail = {}
+    ASizeAvail['S'], ASizeAvail['M'], ASizeAvail['L'] = AsizeS.get(), AsizeM.get(), AsizeL.get()
+    Alist.append(Apparel(apparelbrand.get(), Atype.get(), Aprice.get(), ASizeAvail))
+    messagebox.showinfo('Apparel',f'Brand: {apparelbrand.get()}\nType: {Atype.get()}\nPrice:{Aprice.get()}\n{ASizeAvail}')
+
+
+
+def printlist(*args):
+    messagebox.showinfo('All items',Alist)
+    # print(Alist)
+
+B=Button(frame_a, text= 'Add to inventory', font ='arial 15' , bg = 'ghost white',command=functioncallback).grid(row=4, column=0)
+B2=Button(frame_a, text= 'See list', font ='arial 15' , bg = 'ghost white',command=printlist).grid(row=5, column=0)
+
+frame_a.pack(fill=BOTH,expand=True)
+
+
+frame_b=Frame(master=root, width=490, height=350, bg="blue")
+
+def checkApparelAvailability(*args):
+    for entry in Alist:
+        print(entry)
+        print(entry.inStock[apparelsizetosearch.get()])
+
+        if entry.apparelbrand==apparelbrandtosearch.get() and entry.Type==appareltypetosearch.get():
+            if entry.inStock[apparelsizetosearch.get()]==0:
+                messagebox.showinfo('Sorry!','Sorry, this item is out of stock!')
+                # print('Sorry, out of stock!')
+                break
+
+            elif int(entry.inStock[apparelsizetosearch.get()])-apparelrequired.get()<0:
+                messagebox.showinfo('Sorry!', f'Only {entry.inStock[apparelsizetosearch.get()]} items available.')
+                break
+                # print(f'Only {entry.inStock[apparelsizetosearch.get()]} items available.')
+                # apparelrequired = int(input('How many quantities: '))
+                # ApparelsinStore.checkApparelAvailability(apparelbrandtosearch,appareltypetosearch,apparelsizetosearch,apparelrequired)
+
+
+            else:
+                entry.inStock[apparelsizetosearch.get()]=int(entry.inStock[apparelsizetosearch.get()])-apparelrequired.get()
+                messagebox.showinfo('Inventory',f'Inventory after order: {entry.inStock[apparelsizetosearch.get()]}')
+                # print(f'Inventory after order: {entry.inStock[apparelsizetosearch.get()]}')
+
+                break
+        else:
+            messagebox.showinfo('Not Available','No such apparel available')
+            # print('No such apparel available')
+
+
+
+Label(frame_b, text='Brand: ',font ='arial 15').grid(row=0, column=0)
+Label(frame_b, text='Type: ',font ='arial 15').grid(row=1, column=0)
+Label(frame_b, text='Size: ',font ='arial 15').grid(row=2, column=0)
+Label(frame_b, text='Quantity: ',font ='arial 15').grid(row=3, column=0)
+
+Entry(frame_b,font ='arial 15' , bg = 'ghost white',textvariable=apparelbrandtosearch).grid(row=0, column=1)
+Entry(frame_b,font ='arial 15' , bg = 'ghost white',textvariable=appareltypetosearch).grid(row=1, column=1)
+Entry(frame_b,font ='arial 15' , bg = 'ghost white',textvariable=apparelsizetosearch).grid(row=2, column=1)
+Entry(frame_b,font ='arial 15' , bg = 'ghost white',textvariable=apparelrequired).grid(row=3, column=1)
+
+
+# ApparelsinStore=Store(Alist)
+# availability=ApparelsinStore.checkApparelAvailability(apparelbrandtosearch.get(),appareltypetosearch.get(),apparelsizetosearch.get(),apparelrequired.get())
+
+B2=Button(frame_b, text= 'Check and Order', font ='arial 15' , bg = 'ghost white',command=checkApparelAvailability).grid(row=4, column=0)
+
+frame_b.pack(fill=BOTH,expand=True)
+root.mainloop()
+
